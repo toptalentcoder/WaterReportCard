@@ -1,0 +1,35 @@
+{
+  "name": "waterreportcard",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_OPTIONS='--experimental-specifier-resolution=node --loader ts-node/esm' ts-node-dev --respawn --transpile-only ./services/api/server.ts",
+    "build": "tsc",
+    "start": "node dist/services/api/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toptalentcoder/WaterReportCard.git"
+  },
+  "workspaces": [
+    "apps/*",
+    "libs/*",
+    "services/*",
+    "infra",
+    "scripts",
+    "libs/*"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/toptalentcoder/WaterReportCard/issues"
+  },
+  "homepage": "https://github.com/toptalentcoder/WaterReportCard#readme",
+  "description": "",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
+  }
+}

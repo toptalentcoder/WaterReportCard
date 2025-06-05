@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "esModuleInterop": true,
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "*": ["*"]
+        },
+        "outDir": "dist",
+        "rootDir": "."
+    },
+    "include": ["services/**/*", "libs/**/*"],
+    "ts-node": {
+        "esm": true,
+        "experimentalSpecifiers": true
+    }
+}

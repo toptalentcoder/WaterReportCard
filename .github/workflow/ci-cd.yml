@@ -1,0 +1,36 @@
+name: CI-CD-Staging
+on:
+  push:
+    branches: [ "staging" ] # or "main", depending on your flow
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # needed for OIDC
+      contents: read # to checkout code
+    env:
+      AWS_REGION: us-east-1
+      AWS_S3_BUCKET: your-bucket-name
+      AWS_ROLENAME: YourGitHubActionRoleName
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # or whatever runtime
+      - name: Install dependencies
+        run: npm install
+      - name: Build frontend
+        run: npm run build --workspaces apps/web # if using npm workspaces, or cd into apps/web and build
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ env.AWS_ROLENAME }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Deploy Frontend to S3
+        run: aws s3 sync apps/web/build s3://${{ env.AWS_S3_BUCKET }}/ --delete
+      - name: Invalidate CloudFront cache
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+      - name: Deploy Backend with CDK
+        run: npx cdk deploy --require-approval=never

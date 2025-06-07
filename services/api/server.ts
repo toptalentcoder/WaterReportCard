@@ -1,15 +1,13 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import districtRoute from './routes/district-route.ts'
+import express from 'express';
+import serverless from 'serverless-http';
+import authRoute from './routes/auth-route.ts';
+import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
-const PORT = process.env.PORT || 3000
+const app = express();
+app.use(express.json());
+app.use('/auth', authRoute);
 
-// Routes 
-app.use('/districts', districtRoute)
-
-app.listen(PORT, () => {
-    console.log(`API server running at http://localhost:${PORT}`)
-})
+// Export Lambda-compatible handler
+export const handler = serverless(app);

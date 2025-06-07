@@ -1,24 +1,25 @@
-// infra/lambda-functions/index.ts
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as lambdaRuntime from 'aws-cdk-lib/aws-lambda';
+import * as path from 'path';
 
-interface LambdaFunctionsStackProps extends StackProps {
-  vpc: Vpc;
-}
+export class LambdaStack extends Stack {
+  public readonly authHandler;
 
-export class LambdaFunctionsStack extends Stack {
-  public readonly lambda: Function;
-
-  constructor(scope: Construct, id: string, props: LambdaFunctionsStackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    this.lambda = new Function(this, 'DistrictsHandler', {
-      runtime: Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: Code.fromAsset('services/api/districts'),
-      vpc: props.vpc,
+    this.authHandler = new lambda.NodejsFunction(this, 'AuthLambda', {
+      entry: path.join(__dirname, '../../services/api/server.ts'),
+      handler: 'handler', // change this if your handler has a different name
+      runtime: lambdaRuntime.Runtime.NODEJS_20_X,
+      timeout: Duration.seconds(15),
+      environment: {
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+        NODE_OPTIONS: '--enable-source-maps',
+        REGION: 'us-west-2', // change if needed
+      },
     });
   }
 }

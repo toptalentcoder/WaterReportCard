@@ -148,6 +148,9 @@ importers:
       pg:
         specifier: ^8.16.0
         version: 8.16.0
+      serverless-http:
+        specifier: ^3.2.0
+        version: 3.2.0
       zod:
         specifier: ^3.25.51
         version: 3.25.51
@@ -3585,6 +3588,10 @@ packages:
   serve-static@2.2.0:
     resolution: {integrity: sha512-61g9pCh0Vnh7IutZjtLGGpTA355+OPn2TyDv/6ivP2h/AdAVX9azsoxmg2/M6nZeQZNYBEwIcsne1mJd9oQItQ==}
     engines: {node: '>= 18'}
+
+  serverless-http@3.2.0:
+    resolution: {integrity: sha512-QvSyZXljRLIGqwcJ4xsKJXwkZnAVkse1OajepxfjkBXV0BMvRS5R546Z4kCBI8IygDzkQY0foNPC/rnipaE9pQ==}
+    engines: {node: '>=12.0'}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -7571,6 +7578,8 @@ snapshots:
       send: 1.2.0
     transitivePeerDependencies:
       - supports-color
+
+  serverless-http@3.2.0: {}
 
   set-function-length@1.2.2:
     dependencies:

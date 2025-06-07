@@ -1,0 +1,7 @@
+# pnpm-workspace.yaml
+packages:
+  - "apps/*"
+  - "services/*"
+  - "libs/*"
+  - "infra"
+  - "scripts"

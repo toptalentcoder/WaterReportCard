@@ -1,10 +1,12 @@
-import express from 'express'
-import { authGuard } from '../../../libs/shared/iam/middleware/authGuard'
-import { Permission } from '../../../libs/shared/iam/enums/permissions'
-import { getDistricts } from '../controllers/district-controller'
+import express from 'express';
+import { verifyCognitoToken } from '../auth/verify-cognito-token';
+import { rbacGuard } from '../middleware/rbac-guard';
+import { Permission } from '../auth/group-permissions';
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', authGuard(Permission.ViewDistricts), getDistricts)
+router.get('/', verifyCognitoToken, rbacGuard(Permission.ViewDistricts), (req, res) => {
+  res.json([{ id: 1, name: 'North Valley', region: 'West' }]);
+});
 
 export default router;

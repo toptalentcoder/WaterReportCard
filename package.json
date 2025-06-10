@@ -17,8 +17,7 @@
     "libs/*",
     "services/*",
     "infra",
-    "scripts",
-    "libs/*"
+    "scripts"
   ],
   "keywords": [],
   "author": "",

@@ -6,5 +6,8 @@ import { ApiGatewayStack } from './api-gateway';
 const app = new App();
 
 const cognitoStack = new CognitoStack(app, 'CognitoStack');
-const lambdaStack = new LambdaStack(app, 'LambdaStack');
+const lambdaStack = new LambdaStack(app, 'LambdaStack', {
+    userPoolId: cognitoStack.userPool.userPoolId,
+    clientId: cognitoStack.userPoolClient.userPoolClientId,
+});
 new ApiGatewayStack(app, 'ApiGatewayStack', lambdaStack.authHandler);

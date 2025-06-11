@@ -31,3 +31,21 @@ export const getUserInfoAPI = async () => {
         };
     }
 };
+
+export const confirmSignupAPI = async ({ email, code }: { email: string; code: string }) => {
+    try {
+        const response = await api.post("https://lc9ugvtk4k.execute-api.us-west-2.amazonaws.com/prod/auth/confirm", {
+            email,
+            code
+        });
+
+        return {
+            data: response.data,
+        };
+    } catch (error: any) {
+        console.error('Confirm signup API error:', error.response?.data || error);
+        return {
+            error: error.response?.data?.error || error.response?.data?.message || IF_ERROR_PERSISTS,
+        };
+    }
+};

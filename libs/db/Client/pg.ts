@@ -4,17 +4,16 @@ import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-sec
 
 dotenv.config();
 
-function required(key: string): string {
-    const val = process.env[key];
-    if (!val) throw new Error(`Missing env var: ${key}`);
-    return val;
-}
-
 let cachedPassword: string | undefined;
 let pool: Pool | null = null;
 let secretsManager: SecretsManagerClient | null = null;
 
 async function getDatabasePassword(): Promise<string> {
+    // If we're not in AWS, use the local password
+    if (!process.env.AWS_REGION) {
+        return process.env.POSTGRES_PASSWORD || '';
+    }
+
     if (cachedPassword) return cachedPassword;
 
     if (!secretsManager) {
@@ -24,7 +23,10 @@ async function getDatabasePassword(): Promise<string> {
         });
     }
 
-    const secretArn = required('POSTGRES_SECRET_ARN');
+    const secretArn = process.env.POSTGRES_SECRET_ARN;
+    if (!secretArn) {
+        throw new Error('POSTGRES_SECRET_ARN is required in AWS environment');
+    }
 
     try {
         const command = new GetSecretValueCommand({ SecretId: secretArn });
@@ -53,20 +55,20 @@ async function createPool(): Promise<Pool> {
     const password = await getDatabasePassword();
     
     pool = new Pool({
-        host: required('POSTGRES_HOST'),
+        host: process.env.POSTGRES_HOST,
         port: parseInt(process.env.POSTGRES_PORT || '5432'),
-        user: required('POSTGRES_USER'),
+        user: process.env.POSTGRES_USER,
         password: password,
-        database: required('POSTGRES_DB'),
+        database: process.env.POSTGRES_DB,
         // Optimized connection pool settings
         max: 1, // Lambda functions should use a single connection
         min: 0, // Allow the connection to be closed when not in use
         idleTimeoutMillis: 1000, // Close idle connections after 1 second
         connectionTimeoutMillis: 5000, // Reduced connection timeout to 5 seconds
         // SSL configuration for RDS
-        ssl: {
+        ssl: process.env.AWS_REGION ? {
             rejectUnauthorized: false // Required for RDS SSL
-        },
+        } : undefined,
         // Performance optimizations
         keepAlive: true,
         keepAliveInitialDelayMillis: 1000,

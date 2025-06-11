@@ -15,22 +15,35 @@ const clientId = process.env.COGNITO_CLIENT_ID!;
 const cognito = new CognitoIdentityProviderClient({ region });
 
 export const signup = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Missing email or password' });
+  const { email, password, firstName, lastName, role } = req.body;
+  
+  // Log the incoming request body for debugging
+  console.log('Signup request body:', { email, firstName, lastName, role });
+
+  if (!email || !password || !firstName || !lastName || !role) {
+    console.log('Missing fields:', { email: !!email, password: !!password, firstName: !!firstName, lastName: !!lastName, role: !!role });
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
 
   try {
     const command = new SignUpCommand({
       ClientId: clientId,
       Username: email,
       Password: password,
-      UserAttributes: [{ Name: 'email', Value: email }],
+      UserAttributes: [
+        { Name: 'email', Value: email },
+        { Name: 'given_name', Value: firstName },
+        { Name: 'family_name', Value: lastName },
+        { Name: 'nickname', Value: role }
+      ],
     });
 
     await cognito.send(command);
     res.status(200).json({ message: 'Sign-up successful. Please confirm via email (if required).' });
   } catch (err) {
     console.error('Sign-up error:', err);
-    res.status(400).json({ error: (err as Error).message });
+    const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+    res.status(400).json({ error: errorMessage });
   }
 };
 

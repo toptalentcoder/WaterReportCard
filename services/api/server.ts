@@ -5,6 +5,7 @@ import districtRoute from './routes/district-route';
 import systemRoute from './routes/system-route';
 import dotenv from 'dotenv';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -12,6 +13,14 @@ const clientId = process.env.COGNITO_CLIENT_ID;
 if (!clientId) throw new Error('Missing env: COGNITO_CLIENT_ID');
 
 const app = express();
+
+// Configure CORS
+app.use(cors({
+    origin: ['http://localhost:3000', 'https://your-production-domain.com'], // Add your production domain when ready
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 
 // Configure body parsing
 app.use(express.json({ strict: false }));

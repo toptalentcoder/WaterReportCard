@@ -3,6 +3,8 @@ import {
     CognitoIdentityProviderClient,
     SignUpCommand,
     InitiateAuthCommand,
+    ConfirmSignUpCommand,
+    AuthFlowType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { syncUserFromCognito } from '../../../libs/db/models/user';
 
@@ -37,8 +39,20 @@ export const signin = async (req: Request, res: Response) => {
   if (!email || !password) return res.status(400).json({ error: 'Missing email or password' });
 
   try {
+    // Validate environment variables
+    if (!region || !userPoolId || !clientId) {
+      throw new Error('Missing required environment variables: AWS_REGION, COGNITO_POOL_ID, or COGNITO_CLIENT_ID');
+    }
+
+    console.log('Attempting to authenticate with Cognito...', {
+      region,
+      userPoolId,
+      clientId,
+      email
+    });
+
     const command = new InitiateAuthCommand({
-      AuthFlow: 'USER_PASSWORD_AUTH',
+      AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
       ClientId: clientId,
       AuthParameters: {
         USERNAME: email,
@@ -46,20 +60,71 @@ export const signin = async (req: Request, res: Response) => {
       },
     });
 
-    const result = await cognito.send(command);
-    const idToken = result.AuthenticationResult?.IdToken;
-    if (!idToken) throw new Error('Missing idToken');
+    console.log('Sending authentication request...');
+    const response = await cognito.send(command);
+    console.log('Authentication successful, processing tokens...');
+
+    if (!response.AuthenticationResult) {
+      throw new Error('No authentication result received');
+    }
+
+    const { IdToken, AccessToken, RefreshToken } = response.AuthenticationResult;
     
-    const decoded = parseJwt(idToken!);
-    await syncUserFromCognito(decoded.sub, decoded.email);
+    if (!IdToken) {
+      throw new Error('No ID token received');
+    }
+
+    try {
+      const decoded = parseJwt(IdToken);
+      console.log('Syncing user with database...');
+      await syncUserFromCognito(decoded.sub, decoded.email);
+      console.log('User sync completed successfully');
+    } catch (syncError) {
+      console.error('Database sync error:', syncError);
+      // Continue with signin even if sync fails
+    }
 
     res.status(200).json({
       message: 'Sign-in successful',
-      idToken,
-      accessToken: result.AuthenticationResult?.AccessToken,
+      idToken: IdToken,
+      accessToken: AccessToken,
+      refreshToken: RefreshToken,
     });
-  } catch (err) {
+
+  } catch (err: any) {
     console.error('Sign-in error:', err);
+    
+    // Handle specific Cognito errors
+    if (err.name === 'UserNotConfirmedException') {
+      res.status(400).json({ error: 'Please confirm your email before signing in' });
+    } else if (err.name === 'NotAuthorizedException') {
+      res.status(401).json({ error: 'Incorrect email or password' });
+    } else if (err.name === 'UserNotFoundException') {
+      res.status(404).json({ error: 'User does not exist' });
+    } else {
+      res.status(500).json({ 
+        error: 'Authentication failed',
+        details: err.message
+      });
+    }
+  }
+};
+
+export const confirmSignup = async (req: Request, res: Response) => {
+  const { email, code } = req.body;
+  if (!email || !code) return res.status(400).json({ error: 'Missing email or verification code' });
+
+  try {
+    const command = new ConfirmSignUpCommand({
+      ClientId: clientId,
+      Username: email,
+      ConfirmationCode: code,
+    });
+
+    await cognito.send(command);
+    res.status(200).json({ message: 'Email verification successful. You can now sign in.' });
+  } catch (err) {
+    console.error('Verification error:', err);
     res.status(400).json({ error: (err as Error).message });
   }
 };

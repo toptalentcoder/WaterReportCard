@@ -2,10 +2,23 @@ import { db } from '../Client/pg';
 import { getRoleIdByName } from './role';
 
 export async function syncUserFromCognito(userId: string, email: string, roleName = 'QA') {
-    const found = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
-    if (found?.rowCount && found.rowCount > 0) return;
-    const roleId = await getRoleIdByName(roleName);
-    await db.query('INSERT INTO users (id, email, role_id) VALUES ($1, $2, $3)', [userId, email, roleId]);
+    try {
+        // Use a single query with UPSERT to handle both insert and update cases
+        const roleId = await getRoleIdByName(roleName);
+        await db.query(`
+            INSERT INTO users (id, email, role_id)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (id) DO UPDATE
+            SET email = EXCLUDED.email,
+                role_id = EXCLUDED.role_id
+            WHERE users.email IS DISTINCT FROM EXCLUDED.email
+               OR users.role_id IS DISTINCT FROM EXCLUDED.role_id
+        `, [userId, email, roleId]);
+    } catch (error) {
+        console.error('Error syncing user:', error);
+        // Don't throw the error, just log it and continue
+        // This prevents the signin from failing if the sync fails
+    }
 }
 
 export async function getUserPermissions(userId: string): Promise<string[]> {

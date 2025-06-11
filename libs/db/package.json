@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.826.0",
     "@types/pg": "^8.15.4",
     "dotenv": "^16.5.0",
     "pg": "^8.16.0"

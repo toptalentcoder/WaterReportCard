@@ -52,5 +52,4 @@ export function verifyCognitoToken(req: Request, res: Response, next: NextFuncti
             res.status(500).json({ error: 'User sync failed' });
         }
     });
-  }
-  
+}

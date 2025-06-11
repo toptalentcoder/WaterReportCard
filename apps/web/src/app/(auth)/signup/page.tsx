@@ -27,7 +27,7 @@ export default function LoginPage() {
 
     const onSubmit = async (data: CreateUserPayload) => {
         setSubmitError("");
-        console.log('Form submission data:', data); // Debug log
+        console.log('Form submission data:', data);
 
         try {
             // Ensure all required fields are present
@@ -43,16 +43,8 @@ export default function LoginPage() {
                 return;
             }
 
-            // store JWT Token as well as UserInfo for each subsequent request
-            localStorage.setItem(LOCAL_STORAGE.JWT_TOKEN, res.data.token);
-            const userInfo = await getUserInfoAPI();
-
-            localStorage.setItem(
-                LOCAL_STORAGE.USER_INFO,
-                JSON.stringify(userInfo.data)
-            );
-
-            router.push("/dashboard");
+            // Redirect to confirmation page with email parameter
+            router.push(`/confirm?email=${encodeURIComponent(data.email)}`);
         } catch (error) {
             console.error("Error during account creation:", error);
             setSubmitError(IF_ERROR_PERSISTS);
@@ -97,7 +89,7 @@ export default function LoginPage() {
                                                 id="firstName"
                                                 type="text"
                                                 placeholder="First Name"
-                                                className="block w-full rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
+                                                className="block w-full text-gray-800 rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
                                             />
 
                                             {errors.firstName && (
@@ -121,7 +113,7 @@ export default function LoginPage() {
                                                 id="lastName"
                                                 type="text"
                                                 placeholder="Last Name"
-                                                className="block w-full rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
+                                                className="block w-full text-gray-800 rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
                                             />
 
                                             {errors.lastName && (
@@ -143,7 +135,7 @@ export default function LoginPage() {
                                             <select
                                                 {...register("role", { required: true })}
                                                 id="role"
-                                                className="block w-full rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
+                                                className="block w-full text-gray-800 rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
                                             >
                                                 <option value="">Select a role</option>
                                                 <option value="user">User</option>
@@ -171,7 +163,7 @@ export default function LoginPage() {
                                                 id="email"
                                                 type="email"
                                                 placeholder="Email"
-                                                className="block w-full rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
+                                                className="block w-full text-gray-800 rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
                                             />
 
                                             {errors.email && (
@@ -204,7 +196,7 @@ export default function LoginPage() {
                                                 id="password"
                                                 type={showPassword ? "text" : "password"}
                                                 placeholder="Password"
-                                                className="block w-full rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
+                                                className="block w-full text-gray-800 rounded-md border-0 py-1.5 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
                                             />
                                             {errors.password && (
                                                 <p className="text-red-500 mt-2 text-sm">
@@ -234,7 +226,7 @@ export default function LoginPage() {
                                     <div className="flex items-center justify-center">
                                         <div className="text-sm leading-6">
                                         <Link
-                                            href="/login"
+                                            href="/signin"
                                             className="font-semibold text-cyan-600 hover:text-cyan-500"
                                         >
                                             Log In

@@ -4,17 +4,17 @@ import { LoginPayload } from "@/types/types";
 
 export const loginAPI = async ({ email, password }: LoginPayload) => {
     try {
-        const response = await api.post("/auth/login", {
-        email,
-        password,
+        const response = await api.post("https://lc9ugvtk4k.execute-api.us-west-2.amazonaws.com/prod/auth/signin", {
+            email,
+            password,
         });
 
         return {
-        data: response.data,
+            data: response.data,
         };
     } catch (error: any) {
         return {
-        error: error.response ? error.response.data : IF_ERROR_PERSISTS,
+            error: error.response ? error.response.data : IF_ERROR_PERSISTS,
         };
     }
 };

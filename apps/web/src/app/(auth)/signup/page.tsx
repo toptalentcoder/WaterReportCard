@@ -43,6 +43,10 @@ export default function LoginPage() {
                 return;
             }
 
+            // Clear any existing tokens
+            localStorage.removeItem(LOCAL_STORAGE.JWT_TOKEN);
+            localStorage.removeItem(LOCAL_STORAGE.USER_INFO);
+
             // Redirect to confirmation page with email parameter
             router.push(`/confirm?email=${encodeURIComponent(data.email)}`);
         } catch (error) {

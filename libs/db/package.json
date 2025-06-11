@@ -2,8 +2,12 @@
   "name": "libs-db",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init-db": "ts-node --project tsconfig.json init-db.ts",
+    "build": "tsc",
+    "start": "node dist/init-db.js"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +18,10 @@
     "@types/pg": "^8.15.4",
     "dotenv": "^16.5.0",
     "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }

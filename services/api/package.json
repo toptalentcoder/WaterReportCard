@@ -11,8 +11,10 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.826.0",
+    "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.9",
     "amazon-cognito-identity-js": "^6.3.15",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",

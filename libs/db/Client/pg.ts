@@ -11,11 +11,19 @@ function required(key: string): string {
 }
 
 let cachedPassword: string | undefined;
+let pool: Pool | null = null;
+let secretsManager: SecretsManagerClient | null = null;
 
 async function getDatabasePassword(): Promise<string> {
     if (cachedPassword) return cachedPassword;
 
-    const secretsManager = new SecretsManagerClient({ region: process.env.AWS_REGION });
+    if (!secretsManager) {
+        secretsManager = new SecretsManagerClient({ 
+            region: process.env.AWS_REGION,
+            maxAttempts: 3 // Limit retry attempts
+        });
+    }
+
     const secretArn = required('POSTGRES_SECRET_ARN');
 
     try {
@@ -39,44 +47,71 @@ async function getDatabasePassword(): Promise<string> {
     }
 }
 
-// Optimize connection pool for Lambda environment
-export const db = new Pool({
-    host: required('POSTGRES_HOST'),
-    port: parseInt(process.env.POSTGRES_PORT || '5432'),
-    user: required('POSTGRES_USER'),
-    password: process.env.POSTGRES_PASSWORD || '', // Will be updated after fetching from Secrets Manager
-    database: required('POSTGRES_DB'),
-    // Connection pool settings
-    max: 1, // Lambda functions should use a single connection
-    min: 0, // Allow the connection to be closed when not in use
-    idleTimeoutMillis: 1000, // Close idle connections after 1 second
-    connectionTimeoutMillis: 5000, // Connection timeout after 5 seconds
-    // SSL configuration for RDS
-    ssl: {
-        rejectUnauthorized: false // Required for RDS SSL
-    }
-});
+async function createPool(): Promise<Pool> {
+    if (pool) return pool;
 
-// Initialize the database connection with the password from Secrets Manager
-(async () => {
+    const password = await getDatabasePassword();
+    
+    pool = new Pool({
+        host: required('POSTGRES_HOST'),
+        port: parseInt(process.env.POSTGRES_PORT || '5432'),
+        user: required('POSTGRES_USER'),
+        password: password,
+        database: required('POSTGRES_DB'),
+        // Optimized connection pool settings
+        max: 1, // Lambda functions should use a single connection
+        min: 0, // Allow the connection to be closed when not in use
+        idleTimeoutMillis: 1000, // Close idle connections after 1 second
+        connectionTimeoutMillis: 5000, // Reduced connection timeout to 5 seconds
+        // SSL configuration for RDS
+        ssl: {
+            rejectUnauthorized: false // Required for RDS SSL
+        },
+        // Performance optimizations
+        keepAlive: true,
+        keepAliveInitialDelayMillis: 1000,
+        application_name: 'waterreportcard',
+        statement_timeout: 5000, // 5 seconds timeout for queries
+        query_timeout: 5000, // 5 seconds timeout for queries
+    });
+
+    // Handle connection errors
+    pool.on('error', (err) => {
+        console.error('Unexpected error on idle client', err);
+        pool = null; // Reset pool on error to force recreation
+    });
+
+    // Handle connection timeouts
+    pool.on('connect', (client) => {
+        client.on('error', (err) => {
+            console.error('Client error:', err);
+            pool = null; // Reset pool on error to force recreation
+        });
+    });
+
+    return pool;
+}
+
+// Export a function to get a database connection
+export async function getDb(): Promise<Pool> {
     try {
-        const password = await getDatabasePassword();
-        db.options.password = password;
+        return await createPool();
     } catch (error) {
-        console.error('Failed to initialize database connection:', error);
+        console.error('Failed to create database pool:', error);
         throw error;
     }
-})();
+}
 
-// Handle connection errors
-db.on('error', (err) => {
-    console.error('Unexpected error on idle client', err);
-    process.exit(-1);
-});
-
-// Handle connection timeouts
-db.on('connect', (client) => {
-    client.on('error', (err) => {
-        console.error('Client error:', err);
-    });
-});
+// For backward compatibility
+export const db = {
+    query: async (text: string, params?: any[]) => {
+        const pool = await getDb();
+        return pool.query(text, params);
+    },
+    end: async () => {
+        if (pool) {
+            await pool.end();
+            pool = null;
+        }
+    }
+};

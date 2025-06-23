@@ -5,40 +5,58 @@ import React from "react";
 
 export default function MainContent() {
   return (
-    <div className="absolute top-12 left-64 bottom-0 w-1/3 bg-white bg-opacity-90 border-r border-gray-200 overflow-y-auto p-4 z-50">
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4 text-sm">
-        <input
-          type="text"
-          placeholder="Search your transactions"
-          className="border p-2 rounded w-full"
-        />
-        <select className="border p-2 rounded flex-1"><option>Transaction Type</option></select>
-        <select className="border p-2 rounded flex-1"><option>Reference Number</option></select>
-        <select className="border p-2 rounded flex-1"><option>Contact</option></select>
-        <select className="border p-2 rounded flex-1"><option>Amount</option></select>
-        <button className="bg-blue-500 text-white px-3 py-1 rounded">More Filters</button>
-      </div>
-
-      {/* Customer list */}
-      <div className="space-y-4">
-        <div className="bg-white border rounded shadow-sm p-3">
-          <h3 className="font-semibold">Customer: Google</h3>
-          <p className="text-xs text-gray-500">Campus Bayview • Building A100</p>
-          <button className="bg-blue-500 text-white px-2 py-1 mt-2 rounded">Show Details</button>
+    <div className="sapce-y-4">
+        <div className="flex items-center justify-between text-gray-800 ml-1 mt-1 bg-white bg-opacity-90 border-r border-gray-200 px-3 py-2 z-50">
+            <div>
+                <div className="text-xl font-semibold">All Customers</div>
+                <div>12 customers, 8,901 filter units</div>
+            </div>
+            <div>
+                <div>Search your transactions</div>
+                <div className="flex items-center gap-4">
+                    <div>
+                        <div>Date range</div>
+                        <div>calendar</div>
+                    </div>
+                    <div>
+                        <div>Transaction Type</div>
+                        <div>Select Transaction</div>
+                    </div>
+                    <div>
+                        <div>Reference Number</div>
+                        <div>Number</div>
+                    </div>
+                    <div>
+                        <div>Contact</div>
+                        <div>Select Contact</div>
+                    </div>
+                    <div>
+                        <div>Amount</div>
+                        <div>Select Amount</div>
+                    </div>
+                    <div>
+                        <div>Memo</div>
+                        <div>Select Memo</div>
+                    </div>
+                    <div>
+                        <div>More Filters</div>
+                        <div>More Filters</div>
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-center gap-4">
+                <div className="bg-[#FDF2F2] rounded-lg p-4 text-[#E85151]">
+                    <div className="bg-[#FDE9E9] rounded-full p-2 flex justify-center"><span>5</span></div>
+                    <div>CRITICAL</div>
+                </div>
+                <div className="bg-[#FDFDEB] rounded-lg p-4 text-[#A96718]">
+                    <div className="bg-[#FDF6B4] rounded-full p-2 flex justify-center"><span>5</span></div>
+                    <div>CRITICAL</div>
+                </div>
+            </div>
         </div>
-        <div className="bg-white border rounded shadow-sm p-3">
-          <h3 className="font-semibold">Customer: Pinterest</h3>
-          <p className="text-xs text-gray-500">Campus Mountain View • Building D315</p>
-          <button className="bg-blue-500 text-white px-2 py-1 mt-2 rounded">Show Details</button>
-        </div>
-        <div className="bg-white border rounded shadow-sm p-3">
-          <h3 className="font-semibold">Customer: Figma</h3>
-          <p className="text-xs text-gray-500">Campus City • Building B212</p>
-          <button className="bg-blue-500 text-white px-2 py-1 mt-2 rounded">Show Details</button>
-        </div>
-      </div>
     </div>
+
   );
 }
 

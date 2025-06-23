@@ -22,10 +22,32 @@ export default function WaterPopup({ props, onClose }: WaterPopupProps) {
             )}
 
             <h4 className="text-lg font-semibold mb-2 border-b border-slate-200 pb-1">💧 Water Report</h4>
-            <p><span className="font-medium">CWS Name:</span> {props.CWS_NAME || "N/A"}</p>
-            <p><span className="font-medium">County:</span> {props.COUNTY || "N/A"}</p>
-            <p><span className="font-medium">City:</span> {props.CITY_SRVD || "N/A"}</p>
-            <p><span className="font-medium">Phone:</span> {props.PHONE || "N/A"}</p>
+            <ul className="text-sm space-y-1">
+                <li>
+                    <span className="font-semibold">Population Category:</span>{" "}
+                    {props.Pop_Cat_5 || "N/A"}
+                </li>
+                <li>
+                    <span className="font-semibold">Population Served:</span>{" "}
+                    {props.Population_Served_Count || "N/A"}
+                </li>
+                <li>
+                    <span className="font-semibold">Primacy Agency:</span>{" "}
+                    {props.Primacy_Agency || "N/A"}
+                </li>
+                <li>
+                    <span className="font-semibold">Secondary ID Source:</span>{" "}
+                    {props.Secondary_ID_Source || "N/A"}
+                </li>
+                <li>
+                    <span className="font-semibold">Service Area Type:</span>{" "}
+                    {props.Service_Area_Type || "N/A"}
+                </li>
+                <li>
+                    <span className="font-semibold">Service Connections:</span>{" "}
+                    {props.Service_Connections_Count || "N/A"}
+                </li>
+            </ul>
         </div>
     );
 }

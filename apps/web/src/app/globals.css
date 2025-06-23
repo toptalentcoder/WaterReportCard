@@ -17,3 +17,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Remove the default Mapbox popup background & padding */
+.custom-popup .mapboxgl-popup-content {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.custom-popup .mapboxgl-popup-tip {
+  display: none;
+}

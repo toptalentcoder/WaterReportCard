@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { confirmSignupAPI } from "@/services/user.api";
 import { IF_ERROR_PERSISTS } from "@/utils/constants";
+import { LOCAL_STORAGE } from "@/utils/constants";
 
 interface ConfirmFormData {
     code: string;
@@ -39,7 +40,16 @@ export default function ConfirmPage() {
                 return;
             }
 
-            // Redirect to login page after successful confirmation
+            // Clear any existing tokens before storing new ones
+            localStorage.removeItem(LOCAL_STORAGE.JWT_TOKEN);
+            localStorage.removeItem(LOCAL_STORAGE.USER_INFO);
+
+            // Store the new token if provided
+            if (res.data?.token) {
+                localStorage.setItem(LOCAL_STORAGE.JWT_TOKEN, res.data.token);
+            }
+
+            // Redirect to signin page after successful confirmation
             router.push("/signin");
         } catch (error) {
             console.error("Error during confirmation:", error);

@@ -27,3 +27,7 @@ body {
 .custom-popup .mapboxgl-popup-tip {
   display: none;
 }
+
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}

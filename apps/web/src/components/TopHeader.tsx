@@ -40,7 +40,10 @@ export default function TopHeader({  onClose, map, mapboxToken }: TopHeaderProps
           { signal: controller.signal }
         )
           .then((res) => res.json())
-          .then((data) => setResults(data.features || []))
+          .then((data) => {
+            console.log("Mapbox API response:", data); // Log the response
+            setResults(data.features || []);
+          })
           .catch(() => {});
     
         return () => controller.abort();
@@ -50,9 +53,15 @@ export default function TopHeader({  onClose, map, mapboxToken }: TopHeaderProps
       setSearchValue(feature.place_name);
       setShowSearch(false);
       setResults([]);
-      if (map) {
-        map.flyTo({ center: feature.center, zoom: 12 });
-      }
+  // // First, check if 'center' exists in the feature
+  // const coordinates = feature.center || feature.geometry?.coordinates;
+
+  // if (map && coordinates) {
+  //   console.log("Flying to:", coordinates);  // Log the coordinates to ensure it's correct
+  //   map.flyTo({ center: coordinates, zoom: 12 });
+  // } else {
+  //   console.error("Map or feature center/geometry is invalid", feature);
+  // }
     };  
     
     return (

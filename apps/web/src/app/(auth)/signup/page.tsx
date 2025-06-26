@@ -10,7 +10,7 @@ import { CreateUserPayload } from "@/types/types";
 import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { createUserAPI, getUserInfoAPI } from "@/services/user.api";
+import { createUserAPI } from "@/services/user.api";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

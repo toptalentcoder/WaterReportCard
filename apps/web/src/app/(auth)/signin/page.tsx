@@ -49,7 +49,8 @@ export default function LoginPage() {
 
         router.push("/dashboard");
         } catch (error) {
-        setSubmitError(IF_ERROR_PERSISTS);
+            console.log(error)
+            setSubmitError(IF_ERROR_PERSISTS);
         }
     };
 

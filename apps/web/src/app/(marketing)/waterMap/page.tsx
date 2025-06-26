@@ -7,20 +7,21 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import FloatingHeader from "../../../components/FloatingHeader";
 import { PropertiesTypes } from "@/utils/GeoJSONTypes";
 import WaterPopup from "@/components/ui/water_boundaries_popup";
-import Sidebar from "@/components/Sidebar";
 import Lottie from "lottie-react";
 import dropletAnimation from "../../../../public/Sidebar/waterDubble.json";
 import DashboardLayout from "@/components/DashboardLayout";
-import MainContent from "@/components/MainContent";
 import { MAPBOX_ACCESS_TOKEN } from "@/config/apiConfig";
-import { FaMoon } from "react-icons/fa";
-import { FaRegSun } from "react-icons/fa";
+import Image from "next/image";
+import { FaCity } from "react-icons/fa";
+import { PiMapPinAreaBold } from "react-icons/pi";
+
 
 export default function WaterMapPage() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedFeatureId, setSelectedFeatureId] = useState<number | string | null>(null);
   const [map, setMap] = useState<mapboxgl.Map | null>(null);
+  const [selectedFeatureProps, setSelectedFeatureProps] = useState<PropertiesTypes | null>(null);
 
   const addWaterLayers = (mbMap: mapboxgl.Map) => {
     mbMap.addSource('water_boundaries', {
@@ -63,16 +64,18 @@ export default function WaterMapPage() {
 
       const featureId = props.PWSID ?? null;
       setSelectedFeatureId(featureId);
+      console.log(props)
+      setSelectedFeatureProps(props);
       mbMap.setFilter('water_boundaries_selected', ['==', ['get', 'PWSID'], featureId]);
 
-      const popupNode = document.createElement('div');
-      const closePopup = () => popup.remove();
-      const root = ReactDOM.createRoot(popupNode);
-      root.render(<WaterPopup props={props} onClose={closePopup} />);
-      const popup = new mapboxgl.Popup({ closeButton: false, className: "custom-popup" })
-        .setLngLat(e.lngLat)
-        .setDOMContent(popupNode)
-        .addTo(mbMap);
+    //   const popupNode = document.createElement('div');
+    //   const closePopup = () => popup.remove();
+    //   const root = ReactDOM.createRoot(popupNode);
+    //   root.render(<WaterPopup props={props} onClose={closePopup} />);
+    //   const popup = new mapboxgl.Popup({ closeButton: false, className: "custom-popup" })
+    //     .setLngLat(e.lngLat)
+    //     .setDOMContent(popupNode)
+    //     .addTo(mbMap);
     });
 
     mbMap.on('mouseenter', 'water_boundaries_borders', () => mbMap.getCanvas().style.cursor = 'pointer');
@@ -123,7 +126,7 @@ export default function WaterMapPage() {
         isDark = !isDark;
         mbMap.setStyle(
           isDark
-            ? "mapbox://styles/healer-mapbox/cmc97qmfk02b301s2giwz02xy"
+            ? "mapbox://styles/healer-mapbox/cmbsc8mmn010v01s568xue36m"
             : "mapbox://styles/healer-mapbox/cmc97ganw01es01rxfaol63ob"
         );
 
@@ -135,9 +138,6 @@ export default function WaterMapPage() {
 
     return () => mbMap.remove();
   }, []);
-
-
-  
 
   return (
     <>
@@ -162,6 +162,100 @@ export default function WaterMapPage() {
           </div>
         </>
       )}
+
+      {selectedFeatureProps && (
+        <div
+          className="absolute right-5 top-0 mt-20 w-72 bg-gradient-to-b from-[#DE63CB] to-[#A39AA2] shadow-xl z-20"
+          style={{ height: 'calc(100vh - 6rem)' }}
+        >
+          <div className="flex justify-between">
+            <Image
+              src="/WaterReportCard/logo.png"
+              width={100}
+              height={100}
+              alt="Liquos Logo"
+              className="w-40"
+            />
+            <button
+                className="absolute top-2 right-2 text-slate-400 hover:text-slate-600 text-white font-bold text-2xl"
+                onClick={() => setSelectedFeatureProps(null)}
+                title="Close popup"
+            >
+                ✕
+            </button>
+          </div>
+          
+          <div className="relative flex items-center mt-5 w-full">
+            {/* White pill */}
+            <div className="w-full mr-6 h-12 bg-white rounded-3xl flex items-center justify-between text-gray-800 px-3">
+              <div className="pl-6">CWS</div>
+              <div className="font-bold">{selectedFeatureProps.Primacy_Agency}</div>
+            </div>
+
+            {/* Icon overlapping pill */}
+            <div className="absolute left-0 -translate-x-1/2 bg-white rounded-full w-18 h-18 flex justify-center items-center z-10">
+              <PiMapPinAreaBold className="text-gray-600 w-10 h-10" />
+            </div>
+          </div>
+
+          <div className="relative flex items-center mt-10 w-full mb-6">
+            {/* White pill */}
+            <div className="w-full mr-6 h-12 bg-white rounded-3xl flex items-center justify-between text-gray-800 px-3">
+              <div className="pl-6">City Served</div>
+              <div className="font-bold">{selectedFeatureProps.Primacy_Agency}</div>
+            </div>
+
+            {/* Icon overlapping pill */}
+            <div className="absolute left-0 -translate-x-1/2 bg-white rounded-full w-18 h-18 flex justify-center items-center z-10">
+              <FaCity className="text-gray-600 w-10 h-10" />
+            </div>
+          </div>
+
+          {/* Collapsible Section */}
+          <details className="mt-4 pt-2 px-6">
+            <summary className="cursor-pointer flex items-center justify-between text-lg font-semibold">
+              <div className="flex items-center">
+                <span>Water Report</span>
+                <Image
+                  src="/WaterReportCard/waterBubble.svg"
+                  width={10}
+                  height={10}
+                  alt="Liquos Logo"
+                  className="w-24"
+                />
+              </div>
+              <span>▼</span>
+            </summary>
+            <ul className="mt-2 space-y-1 text-white text-sm">
+              <li>
+                  <span className="font-semibold">Population Category:</span>{" "}
+                  {selectedFeatureProps.Pop_Cat_5 || "N/A"}
+              </li>
+              <li>
+                  <span className="font-semibold">Population Served:</span>{" "}
+                  {selectedFeatureProps.Population_Served_Count || "N/A"}
+              </li>
+              <li>
+                  <span className="font-semibold">Primacy Agency:</span>{" "}
+                  {selectedFeatureProps.Primacy_Agency || "N/A"}
+              </li>
+              <li>
+                  <span className="font-semibold">Secondary ID Source:</span>{" "}
+                  {selectedFeatureProps.Secondary_ID_Source || "N/A"}
+              </li>
+              <li>
+                  <span className="font-semibold">Service Area Type:</span>{" "}
+                  {selectedFeatureProps.Service_Area_Type || "N/A"}
+              </li>
+              <li>
+                  <span className="font-semibold">Service Connections:</span>{" "}
+                  {selectedFeatureProps.Service_Connections_Count || "N/A"}
+              </li>
+            </ul>
+          </details>
+        </div>
+      )}
+
 
       <div className="relative h-screen">
         <div id="map" className="absolute inset-0 w-full h-full" />

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Dialog } from "@headlessui/react";
-import { CgMenuLeft, CgClose, CgAbstract } from "react-icons/cg";
+// import { CgMenuLeft, CgClose } from "react-icons/cg";
 import { HiOutlineNewspaper, HiOutlineShoppingCart } from "react-icons/hi";
 import {
   PiGlobeHemisphereEastDuotone,
@@ -13,7 +13,6 @@ import {
   PiUserCircleDuotone,
 } from "react-icons/pi";
 import { RiDashboard2Line } from "react-icons/ri";
-import { FiPhoneCall } from "react-icons/fi";
 import { LOCAL_STORAGE, PROJECT_NAME } from "@/utils/constants";
 import { CheckIfAuthenticated } from "@/utils/CheckIfAuthenticated";
 
@@ -142,11 +141,11 @@ const FloatingHeader = () => {
             height={25}
             alt="Liquos Logo"
           />
-          {mobileMenuOpen ? (
+          {/* {mobileMenuOpen ? (
             <CgClose className="text-gray-600 hover:text-gray-900 h-6 w-6 ml-2 flex lg:hidden" />
           ) : (
             <CgMenuLeft className="text-gray-600 hover:text-gray-900 h-6 w-6 ml-2 flex lg:hidden" />
-          )}
+          )} */}
         </Link>
 
         {/* Navigation links */}

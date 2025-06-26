@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom/client";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import FloatingHeader from "../../../components/FloatingHeader";
 import { PropertiesTypes } from "@/utils/GeoJSONTypes";
-import WaterPopup from "@/components/ui/water_boundaries_popup";
 import Lottie from "lottie-react";
 import dropletAnimation from "../../../../public/Sidebar/waterDubble.json";
 import DashboardLayout from "@/components/DashboardLayout";

@@ -50,7 +50,7 @@ export default function WaterMapPage() {
       type: 'fill',
       source: 'water_boundaries',
       'source-layer': 'water_boundaries',
-      paint: { 'fill-color': '#FF0000', 'fill-opacity': 0.7 },
+      paint: { 'fill-color': '#FF9D16', 'fill-opacity': 0.3 },
       filter: ['==', ['get', 'PWSID'], '']
     });
 
